@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Todo from "./Todo";
 import TodoForm from "./TodoForm";
 import { Todo as TodoType } from "./Todos.types";
+import swal from "sweetalert";
 
 function TodosWrapper() {
   const [todos, setTodos] = useState<TodoType[]>([]);
@@ -20,11 +21,32 @@ function TodosWrapper() {
   };
 
   const deleteTodo = (id: string) => {
-    // Codes ...
+    swal({
+      title: "آیا از حذف تودو اطمینان دارید؟",
+      icon: "warning",
+      buttons: ["نه", "آره"],
+    }).then((result) => {
+      if (result) {
+        setTodos(todos.filter((todo) => todo.id !== id));
+
+        swal({
+          title: "تودوی مورد نظر با موفقیت حذف شد",
+          icon: "success",
+        });
+      }
+    });
+
+    return true;
   };
 
   const toggleComplete = (id: string) => {
-    // Codes ...
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+
+    return true;
   };
 
   return (
@@ -36,7 +58,12 @@ function TodosWrapper() {
 
       {/* display todos */}
       {todos.map((todo) => (
-        <Todo key={todo.id} />
+        <Todo
+          key={todo.id}
+          todo={todo}
+          deleteTodo={deleteTodo}
+          toggleComplete={toggleComplete}
+        />
       ))}
     </div>
   );
